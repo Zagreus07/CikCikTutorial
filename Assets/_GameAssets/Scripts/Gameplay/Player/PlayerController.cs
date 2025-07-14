@@ -20,13 +20,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _jumpCooldown;
     [SerializeField] private float _airMultiplier;
-     [SerializeField] private float _airDrag;
+    [SerializeField] private float _airDrag;
     [SerializeField] private bool _canJump;
 
     [Header("Slider Settings")]
     [SerializeField] private KeyCode _slideKey;
     [SerializeField] private float _slideMultiplier;
     [SerializeField] private float _slideDrag;
+    [SerializeField] private bool _isSliding;
 
     [Header("Ground Check Settings")]
     [SerializeField] private float _playerHeight;
@@ -34,14 +35,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _groundDrag;
     private StateControl _stateControl;
     private Rigidbody _playerRigidbody;
+
+    private float _startingMovementSpeed, _startinJumpForce;
     private float _horizontalInput, _verticalInput;
     private Vector3 _movementDirection;
-    private bool _isSliding;
     private void Awake()
     {
         _stateControl = GetComponent<StateControl>();
         _playerRigidbody = GetComponent<Rigidbody>();
         _playerRigidbody.freezeRotation = true;
+        _startingMovementSpeed = _movementSpeed;
+        _startinJumpForce = _jumpForce;
     }
     private void Update()
     {
@@ -110,7 +114,7 @@ public class PlayerController : MonoBehaviour
             PlayerState.Jump => _airMultiplier,
             _ => 1f
         };
-        _playerRigidbody.AddForce(_movementDirection.normalized * _movementSpeed * forceMultiplier, ForceMode.Force); 
+        _playerRigidbody.AddForce(_movementDirection.normalized * _movementSpeed * forceMultiplier, ForceMode.Force);
     }
     private void SetPlayerDrag()
     {
@@ -144,6 +148,8 @@ public class PlayerController : MonoBehaviour
     {
         _canJump = true;
     }
+
+    #region Helper Functions
     private bool IsGrounded()
     {
         return Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _groundLayer);
@@ -152,5 +158,26 @@ public class PlayerController : MonoBehaviour
     {
         return _movementDirection.normalized;
     }
+    public void SetMovementSpeed(float speed, float duration)
+    {
+        _movementSpeed += speed;
+        Invoke(nameof(ResetMovementSpeed), duration);
+    }
+    private void ResetMovementSpeed()
+    {
+        _movementSpeed = _startingMovementSpeed;
+    }
+
+    public void SetJumpForce(float force, float duration)
+    {
+        _jumpForce += force;
+        Invoke(nameof(ResetJumpForce), duration);
+    }
+    private void ResetJumpForce()
+    {
+        _jumpForce = _startinJumpForce;
+    }
+    #endregion
 }
+
  
