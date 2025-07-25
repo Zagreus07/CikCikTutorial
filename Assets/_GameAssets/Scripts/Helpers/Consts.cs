@@ -1,8 +1,13 @@
 public class Consts
 {
-    public struct SceneNames
+        public struct SceneNames
     {
         public const string GAME_SCENE = "GameScene";
+    }
+    public struct Layers
+    {
+        public const string GROUND_LAYER = "Ground";
+        public const string FLOUR_LAYER = "Floor";
     }
     public struct PlayerAnimations
     {
